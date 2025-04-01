@@ -1,7 +1,6 @@
-const { EmbedBuilder
-} = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const axios = require("axios");
-const net = require('net');
+const net = require("net");
 
 // Embed template with description only
 function descEmbed(client, desc, color = client.config.color.bot) {
@@ -74,15 +73,64 @@ function isValidIpAddress(ipAddress) {
     return false;
 }
 
+// Parse timestring
+function parseTimeString(timeStr) {
+    timeStr = timeStr.replace(/:/g, ".");
+
+    const timeParts = timeStr.split(".");
+    if (timeParts.length > 3 || timeParts.length < 1) {
+        return [true, 0, 0, 0];
+    }
+    if (!timeParts.every((part) => /^\d+$/.test(part))) {
+        return [true, 0, 0, 0];
+    }
+
+    const hour = parseInt(timeParts[0], 10);
+    const minute = timeParts.length > 1 ? parseInt(timeParts[1], 10) : 0;
+    const second = timeParts.length > 2 ? parseInt(timeParts[2], 10) : 0;
+
+    // Validate ranges
+    if (
+        isNaN(hour) ||
+        hour < 0 ||
+        hour > 23 ||
+        isNaN(minute) ||
+        minute < 0 ||
+        minute > 59 ||
+        isNaN(second) ||
+        second < 0 ||
+        second > 59
+    ) {
+        return [true, 0, 0, 0];
+    }
+
+    return [false, hour, minute, second];
+}
+
+// Parse timezone
+function parseTimezone(timezone) {
+    const MIN_TIMEZONE = -14;
+    const MAX_TIMEZONE = 14;
+
+    if (
+        !Number.isInteger(timezone) ||
+        timezone < MIN_TIMEZONE ||
+        timezone > MAX_TIMEZONE
+    ) {
+        return [true, timezone];
+    }
+    return [false, timezone];
+}
+
 // Error catch
 async function errorCatch(client, interaction, error, overwrite = null) {
     // Get data
     const interact = interaction.isAutocomplete()
         ? interaction.options.getFocused()
         : !interaction.isChatInputCommand()
-            ? interaction.customId
-            : interaction;
-    const type = interaction.type
+        ? interaction.customId
+        : interaction;
+    const type = interaction.type;
     const server = interaction?.guild?.name || "Non Guild";
     const serverid = interaction?.guild?.id || "Non Guild";
     const username = interaction.user.username;
@@ -94,27 +142,19 @@ async function errorCatch(client, interaction, error, overwrite = null) {
 
     // Log to console
     console.log(
-        (
-            client.messages.general.errorCode.replace(
-                "{0}",
-                `[${type}] ${interact}`
-            )
+        client.messages.general.errorCode.replace(
+            "{0}",
+            `[${type}] ${interact}`
         )
     );
     console.log(
-        (
-            `${client.messages.general.errorPrefix} Date: ${dateFormatted}`
-        )
+        `${client.messages.general.errorPrefix} Date: ${dateFormatted}`
     );
     console.log(
-        (
-            `${client.messages.general.errorPrefix} Server: '${server}' (${serverid})`
-        )
+        `${client.messages.general.errorPrefix} Server: '${server}' (${serverid})`
     );
     console.log(
-        (
-            `${client.messages.general.errorPrefix} Executor: '${username}' (${userid})`
-        )
+        `${client.messages.general.errorPrefix} Executor: '${username}' (${userid})`
     );
     console.log(error);
 
@@ -156,14 +196,16 @@ async function errorCatch(client, interaction, error, overwrite = null) {
 
     const response = descEmbed(
         client,
-        `${["missing access", "permission", "permissions"].some((str) =>
-            `${error}`.toLowerCase().includes(str)
-        )
-            ? `### ${`${error}`.split(" ").slice(1).join(" ")}\n${client.messages.general.error
-            }`
-            : ["etimedout", "timedout", "timeout"].some((str) =>
+        `${
+            ["missing access", "permission", "permissions"].some((str) =>
                 `${error}`.toLowerCase().includes(str)
             )
+                ? `### ${`${error}`.split(" ").slice(1).join(" ")}\n${
+                      client.messages.general.error
+                  }`
+                : ["etimedout", "timedout", "timeout"].some((str) =>
+                      `${error}`.toLowerCase().includes(str)
+                  )
                 ? client.messages.general.serverBusy
                 : client.messages.general.error
         }`,
@@ -180,5 +222,12 @@ async function errorCatch(client, interaction, error, overwrite = null) {
 }
 
 module.exports = {
-    descEmbed, getData, postData, removeDuplicates, isValidIpAddress, errorCatch
+    descEmbed,
+    getData,
+    postData,
+    removeDuplicates,
+    isValidIpAddress,
+    parseTimeString,
+    parseTimezone,
+    errorCatch,
 };

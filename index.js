@@ -1,17 +1,18 @@
 require("dotenv").config();
 const {
     Client,
-    // GatewayIntentBits,
+    GatewayIntentBits,
     Partials,
     Collection,
 } = require("discord.js");
 const eventHandler = require("./handlers/eventHandler");
+const db = require("./models");
 
 let client;
 
 async function startBot() {
     client = new Client({
-        intents: [],
+        intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
         partials: [Partials.User],
     });
 
@@ -31,8 +32,12 @@ async function startBot() {
 
     // Login
     try {
-        await client.login(process.env.TOKEN);
-        console.log("🤖 Bot is online!");
+        db.sequelize.sync().then(() => {
+            client.db = db;
+            console.log("🤖 Bot is online!");
+
+            client.login(process.env.TOKEN);
+        });
     } catch (error) {
         console.error("❌ Failed to login:", error);
     }

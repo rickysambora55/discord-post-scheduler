@@ -22,7 +22,7 @@ module.exports = {
                     option
                         .setName("time")
                         .setDescription(
-                            "When to schedule. e.g. 12.05 in 24 hours format"
+                            "When to schedule. e.g. 12:05 in 24 hours format"
                         )
                         .setRequired(true)
                 )
