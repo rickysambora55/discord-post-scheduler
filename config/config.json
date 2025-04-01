@@ -1,0 +1,11 @@
+{
+    "color": {
+        "bot": "0x34eb71",
+        "success": "0x00D26A",
+        "warning": "0xFFCC4D",
+        "danger": "0xFB2F61",
+        "secondary": "0x808080",
+        "primary": "0x24ACF2",
+        "default": "0xE3E5E8"
+    }
+}

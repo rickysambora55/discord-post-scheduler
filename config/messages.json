@@ -1,0 +1,26 @@
+{
+    "general": {
+        "commandDeleted": "[register] Command `{0}` has been deleted due to unknown file",
+        "commandDisabled": "[register] Command `{0}` has been disabled",
+        "commandSkipped": "[register] Command `{0}` has been purged! No data left.",
+        "commandSkipped2": "[register] Command `{0}` has been skipped",
+        "commandEdited": "[register] Command `{0}` has been edited",
+        "commandRegistered": "[register] Command `{0}` has been registered",
+        "forwarded": "-# This message will be forwarded to the developer team automatically",
+
+        "userNoPermissions": "🚫 You do not have enough permissions to execute this.",
+        "botNoPermissions": "🚫 The bot do not have enough permissions to execute this.",
+        "botNoAccess": "🚫 The bot do not have access to this channel/thread.\n\nPlease do _Edit Channel_ and put the bot to access or add role that has access to this channel/thread.",
+        "cannotUseInteraction": "🚫 You cannot use this interaction.",
+
+        "errorRegisterCommand": "[error] Error while registering commands!",
+        "errorRegisterContextMenu": "[error] Error while registering context menus!",
+        "errorDatabase": "[error] Error while connecting database!",
+        "errorValidatingCommand": "[error] Error while validating command!",
+        "errorValidatingButton": "[error] Error while validating button!",
+        "errorCode": "[error] Error code in {0}",
+        "errorPrefix": "[error]",
+        "error": "⚠️ Unexpected error occurred. Please try again. If the issue persist, please contact administrator!",
+        "serverBusy": "Server is currently busy, please try again later. If the issue persist, please contact administrator!"
+    }
+}
