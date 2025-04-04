@@ -6,12 +6,22 @@ module.exports = {
             const message = await interaction.deferReply();
 
             // Get data
+            const date = interaction.options.getString("date");
             const time = interaction.options.getString("time");
             const timezone = interaction.options.getInteger("timezone");
             const cycle = interaction.options.getInteger("cycle");
             const msg = interaction.options.getString("message");
             const channel = interaction.options.getChannel("channel").id;
             const img = interaction.options.getString("image");
+
+            // Validate date
+            const [validDate, day, month, year] =
+                client.function.parseDateString(date);
+            if (validDate) {
+                return await message.edit({
+                    content: "Invalid date format! Use DD/MM/YYYY",
+                });
+            }
 
             // Validate time
             const [validTime, hour, minute, second] =
@@ -32,11 +42,16 @@ module.exports = {
                 });
             }
 
+            // Create date
+            const scheduledDate = new Date(
+                Date.UTC(year, month - 1, day, hour, minute, second)
+            );
+
             // Main function
             const scheduleData = {
                 id_server: interaction.guild.id,
                 id_channel: channel,
-                time: `${hour}:${minute}:${second}`,
+                time: scheduledDate,
                 timezone: zone,
                 cycle: cycle,
                 message: msg,

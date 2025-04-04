@@ -20,6 +20,14 @@ module.exports = {
                 .setDescription("Add a schedule")
                 .addStringOption((option) =>
                     option
+                        .setName("date")
+                        .setDescription(
+                            "Date to schedule DD/MM/YYYY up to 1 week. e.g. 15/12/2025"
+                        )
+                        .setRequired(true)
+                )
+                .addStringOption((option) =>
+                    option
                         .setName("time")
                         .setDescription(
                             "When to schedule. e.g. 12:05 in 24 hours format"
@@ -42,7 +50,9 @@ module.exports = {
                             { name: "Once", value: 0 },
                             { name: "Daily", value: 1 },
                             { name: "Weekly", value: 7 },
-                            { name: "Monthly", value: 30 }
+                            { name: "Biweekly (14d)", value: 14 },
+                            { name: "3 Weeks (21d)", value: 21 },
+                            { name: "Monthly (30d)", value: 30 }
                         )
                 )
                 .addStringOption((option) =>

@@ -78,10 +78,11 @@ function parseTimeString(timeStr) {
     timeStr = timeStr.replace(/:/g, ".");
 
     const timeParts = timeStr.split(".");
-    if (timeParts.length > 3 || timeParts.length < 1) {
-        return [true, 0, 0, 0];
-    }
-    if (!timeParts.every((part) => /^\d+$/.test(part))) {
+    if (
+        timeParts.length > 3 ||
+        timeParts.length < 1 ||
+        !timeParts.every((part) => /^\d+$/.test(part))
+    ) {
         return [true, 0, 0, 0];
     }
 
@@ -105,6 +106,50 @@ function parseTimeString(timeStr) {
     }
 
     return [false, hour, minute, second];
+}
+
+// Parse datestring
+function parseDateString(dateStr) {
+    dateStr = dateStr.replace(/-/g, "/");
+    const dateParts = dateStr.split("/");
+
+    if (
+        dateParts.length !== 3 ||
+        !dateParts.every((part) => /^\d+$/.test(part))
+    ) {
+        return [true, 0, 0, 0];
+    }
+
+    const day = parseInt(dateParts[0], 10);
+    const month = parseInt(dateParts[1], 10);
+    const year = parseInt(dateParts[2], 10);
+
+    // Validate ranges
+    if (
+        isNaN(day) ||
+        day < 1 ||
+        day > 31 ||
+        isNaN(month) ||
+        month < 1 ||
+        month > 12 ||
+        isNaN(year) ||
+        year < 1900 ||
+        year > 2100
+    ) {
+        return [true, 0, 0, 0];
+    }
+
+    // Date exist
+    const testDate = new Date(year, month - 1, day);
+    if (
+        testDate.getFullYear() !== year ||
+        testDate.getMonth() !== month - 1 ||
+        testDate.getDate() !== day
+    ) {
+        return [true, 0, 0, 0];
+    }
+
+    return [false, day, month, year];
 }
 
 // Parse timezone
@@ -228,6 +273,7 @@ module.exports = {
     removeDuplicates,
     isValidIpAddress,
     parseTimeString,
+    parseDateString,
     parseTimezone,
     errorCatch,
 };

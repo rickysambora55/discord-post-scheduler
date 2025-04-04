@@ -34,7 +34,7 @@ module.exports = {
                             return (
                                 `**Schedule ID:** [${server_schedule_id}]\n` +
                                 `**Channel:** <#${id_channel}>\n` +
-                                `**Time:** ${time} ${timezoneName}\n` +
+                                `**Next run:** ${time} ${timezoneName}\n` +
                                 `**Cycle:** ${cycleName}\n` +
                                 `**Message:** ${messagePreview}...`
                             );
