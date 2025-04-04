@@ -1,6 +1,9 @@
 const { EmbedBuilder } = require("discord.js");
 const axios = require("axios");
 const net = require("net");
+const { CronJob } = require("cron");
+
+const scheduledJobs = new Map();
 
 // Embed template with description only
 function descEmbed(client, desc, color = client.config.color.bot) {
@@ -167,6 +170,101 @@ function parseTimezone(timezone) {
     return [false, timezone];
 }
 
+// Cron register
+async function scheduleMessage(scheduleData, client) {
+    const { id, time, cycle, message, image, id_channel } = scheduleData;
+
+    const date = new Date(time);
+    const minute = date.getUTCMinutes();
+    const hour = date.getUTCHours();
+    const day = date.getUTCDate();
+    const month = date.getUTCMonth() + 1;
+    const dayOfWeek = date.getUTCDay();
+
+    // Skip
+    if (cycle === 0 && new Date() > date) {
+        client.db.Schedule.destroy({
+            where: {
+                id: id,
+            },
+        });
+        return;
+    }
+
+    // Build cron
+    let cronExpr;
+    switch (cycle) {
+        case 0: // Once
+            cronExpr = `${minute} ${hour} ${day} ${month} *`;
+            break;
+        case 1: // Daily
+            cronExpr = `${minute} ${hour} * * *`;
+            break;
+        case 7: // Weekly
+            cronExpr = `${minute} ${hour} * * ${dayOfWeek}`;
+            break;
+        case 14: // Biweekly (run weekly, filter inside job)
+        case 21: // Every 3 weeks
+            cronExpr = `${minute} ${hour} * * ${dayOfWeek}`;
+            break;
+        case 30: // Monthly
+            cronExpr = `${minute} ${hour} ${day} * *`;
+            break;
+        default:
+            console.error("Unsupported cycle");
+            return;
+    }
+
+    const job = new CronJob(
+        cronExpr,
+        () => {
+            // Optional biweekly/triweekly logic
+            if (cycle === 14 || cycle === 21) {
+                const now = new Date();
+                const diffWeeks = Math.floor(
+                    (now - date) / (1000 * 60 * 60 * 24 * 7)
+                );
+                if (diffWeeks % (cycle / 7) !== 0) return;
+            }
+
+            const channel = client.channels.cache.get(id_channel);
+            if (channel) {
+                channel.send({ content: message, files: image ? [image] : [] });
+            }
+
+            if (cycle === 0) {
+                job.stop();
+                scheduledJobs.delete(id);
+                client.db.Schedule.destroy({
+                    where: {
+                        id: id,
+                    },
+                });
+            } else {
+                let nextDate = new Date(time);
+                if (cycle === 1) {
+                    nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+                } else if (cycle === 7 || cycle === 14 || cycle === 21) {
+                    nextDate.setUTCDate(nextDate.getUTCDate() + cycle);
+                } else if (cycle === 30) {
+                    nextDate.setUTCMonth(nextDate.getUTCMonth() + 1);
+                }
+
+                // Save to database
+                client.db.Schedule.update(
+                    { time: nextDate.toISOString() },
+                    { where: { id } }
+                );
+            }
+        },
+        null,
+        true,
+        `UTC`
+    );
+
+    scheduledJobs.set(id, job);
+}
+
 // Error catch
 async function errorCatch(client, interaction, error, overwrite = null) {
     // Get data
@@ -275,5 +373,6 @@ module.exports = {
     parseTimeString,
     parseDateString,
     parseTimezone,
+    scheduleMessage,
     errorCatch,
 };

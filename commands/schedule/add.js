@@ -41,10 +41,18 @@ module.exports = {
                         "Invalid timezone! Use a valid timezone from the list",
                 });
             }
+            const invertedZone = zone !== 0 ? -zone : 0;
 
             // Create date
             const scheduledDate = new Date(
-                Date.UTC(year, month - 1, day, hour, minute, second)
+                Date.UTC(
+                    year,
+                    month - 1,
+                    day,
+                    hour + invertedZone,
+                    minute,
+                    second
+                )
             );
 
             // Main function
@@ -59,10 +67,19 @@ module.exports = {
             };
 
             client.db.Schedule.create(scheduleData)
-                .then((schedule) => {
+                .then(async (schedule) => {
                     interaction.editReply(
                         `Created schedule with ID: ${schedule.id}`
                     );
+
+                    const sch = await client.db.Schedule.findAll({
+                        where: {
+                            id: schedule.id,
+                        },
+                        raw: true,
+                    });
+
+                    client.function.scheduleMessage(sch[0], client);
                 })
                 .catch((error) => {
                     interaction.editReply(
