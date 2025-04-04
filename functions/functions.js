@@ -193,10 +193,18 @@ async function scheduleMessage(scheduleData, client) {
 
     // Date placeholder
     const now = new Date();
-    const today = now.toLocaleDateString("en-GB");
+    const today = now.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
     const tomorrowDate = new Date(now);
     tomorrowDate.setDate(now.getDate() + 1);
-    const tomorrow = tomorrowDate.toLocaleDateString("en-GB");
+    const tomorrow = tomorrowDate.toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    });
     const formattedMessage = message
         .replace("<DATE>", today)
         .replace("<TOMORROW>", tomorrow);
