@@ -191,6 +191,16 @@ async function scheduleMessage(scheduleData, client) {
         return;
     }
 
+    // Date placeholder
+    const now = new Date();
+    const today = now.toLocaleDateString("en-GB");
+    const tomorrowDate = new Date(now);
+    tomorrowDate.setDate(now.getDate() + 1);
+    const tomorrow = tomorrowDate.toLocaleDateString("en-GB");
+    const formattedMessage = message
+        .replace("<DATE>", today)
+        .replace("<TOMORROW>", tomorrow);
+
     // Build cron
     let cronExpr;
     switch (cycle) {
@@ -229,7 +239,10 @@ async function scheduleMessage(scheduleData, client) {
 
             const channel = client.channels.cache.get(id_channel);
             if (channel) {
-                channel.send({ content: message, files: image ? [image] : [] });
+                channel.send({
+                    content: formattedMessage,
+                    files: image ? [image] : [],
+                });
             }
 
             if (cycle === 0) {
