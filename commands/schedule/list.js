@@ -26,6 +26,12 @@ module.exports = {
                         }) => {
                             const messagePreview = message.slice(0, 30);
                             const cycleName = cycle ? `${cycle} days` : "Once";
+                            const date = new Date(time);
+                            const localTime = new Date(
+                                date.getTime() + timezone * 60 * 60 * 1000
+                            );
+                            const dateString =
+                                localTime.toLocaleDateString("en-GB");
                             const timezoneName =
                                 timezone > 0
                                     ? `GMT+${timezone}`
@@ -34,7 +40,7 @@ module.exports = {
                             return (
                                 `**Schedule ID:** [${server_schedule_id}]\n` +
                                 `**Channel:** <#${id_channel}>\n` +
-                                `**Next run:** ${time} ${timezoneName}\n` +
+                                `**Next run:** ${dateString} ${timezoneName}\n` +
                                 `**Cycle:** ${cycleName}\n` +
                                 `**Message:** ${messagePreview}...`
                             );

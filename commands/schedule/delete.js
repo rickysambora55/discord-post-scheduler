@@ -19,7 +19,7 @@ module.exports = {
 
                 if (result > 0) {
                     interaction.editReply(
-                        "✅ Schedule with id: ${id} has been deleted."
+                        `✅ Schedule with id: ${id} has been deleted.`
                     );
                 } else {
                     interaction.editReply(
