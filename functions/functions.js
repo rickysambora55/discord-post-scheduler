@@ -206,8 +206,8 @@ async function scheduleMessage(scheduleData, client) {
         year: "numeric",
     });
     const formattedMessage = message
-        .replace("<DATE>", today)
-        .replace("<TOMORROW>", tomorrow);
+        .replace(/<DATE>/g, today)
+        .replace(/<TOMORROW>/g, tomorrow);
 
     // Build cron
     let cronExpr;
