@@ -30,8 +30,18 @@ module.exports = {
                             const localTime = new Date(
                                 date.getTime() + timezone * 60 * 60 * 1000
                             );
-                            const dateString =
-                                localTime.toLocaleDateString("en-GB");
+                            const dateString = localTime.toLocaleString(
+                                "en-GB",
+                                {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                    hour12: false,
+                                }
+                            );
                             const timezoneName =
                                 timezone > 0
                                     ? `GMT+${timezone}`

@@ -182,7 +182,7 @@ async function scheduleMessage(scheduleData, client) {
     const dayOfWeek = date.getUTCDay();
 
     // Skip
-    if (cycle === 0 && new Date() > date) {
+    if (cycle === 0 && Date.now() > date.getTime()) {
         client.db.Schedule.destroy({
             where: {
                 id: id,
@@ -206,6 +206,7 @@ async function scheduleMessage(scheduleData, client) {
         year: "numeric",
     });
     const formattedMessage = message
+        .replace(/\\n/g, "\n")
         .replace(/<DATE>/g, today)
         .replace(/<TOMORROW>/g, tomorrow);
 

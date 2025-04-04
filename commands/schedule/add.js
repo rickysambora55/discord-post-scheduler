@@ -66,10 +66,10 @@ module.exports = {
                 image: img || null,
             };
 
-            client.db.Schedule.create(scheduleData)
+            await client.db.Schedule.create(scheduleData)
                 .then(async (schedule) => {
                     interaction.editReply(
-                        `Created schedule with ID: ${schedule.id}`
+                        `Created schedule with ID: ${schedule.server_schedule_id}`
                     );
 
                     const sch = await client.db.Schedule.findAll({
