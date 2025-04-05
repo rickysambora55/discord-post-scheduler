@@ -136,4 +136,4 @@ dist
 .pnp.*
 
 # database
-.database/*
+database/
