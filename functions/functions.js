@@ -170,6 +170,24 @@ function parseTimezone(timezone) {
     return [false, timezone];
 }
 
+// Reschedule
+function reschedule(client, cycle, time, id) {
+    let nextDate = new Date(time);
+    if (cycle === 1) {
+        nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+    } else if (cycle === 7 || cycle === 14 || cycle === 21) {
+        nextDate.setUTCDate(nextDate.getUTCDate() + cycle);
+    } else if (cycle === 30) {
+        nextDate.setUTCMonth(nextDate.getUTCMonth() + 1);
+    }
+
+    // Save to database
+    client.db.Schedule.update(
+        { time: nextDate.toISOString() },
+        { where: { id } }
+    );
+}
+
 // Cron register
 async function scheduleMessage(scheduleData, client) {
     const { id, time, cycle, message, image, id_channel } = scheduleData;
@@ -189,6 +207,11 @@ async function scheduleMessage(scheduleData, client) {
             },
         });
         return;
+    }
+
+    // Reschedule past
+    if (cycle > 0 && Date.now() > date.getTime()) {
+        reschedule(client, cycle, time, id);
     }
 
     // Date placeholder
@@ -262,20 +285,7 @@ async function scheduleMessage(scheduleData, client) {
                     },
                 });
             } else {
-                let nextDate = new Date(time);
-                if (cycle === 1) {
-                    nextDate.setUTCDate(nextDate.getUTCDate() + 1);
-                } else if (cycle === 7 || cycle === 14 || cycle === 21) {
-                    nextDate.setUTCDate(nextDate.getUTCDate() + cycle);
-                } else if (cycle === 30) {
-                    nextDate.setUTCMonth(nextDate.getUTCMonth() + 1);
-                }
-
-                // Save to database
-                client.db.Schedule.update(
-                    { time: nextDate.toISOString() },
-                    { where: { id } }
-                );
+                reschedule(client, cycle, time, id);
             }
         },
         null,
