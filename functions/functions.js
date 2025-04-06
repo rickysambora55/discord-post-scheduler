@@ -192,14 +192,13 @@ async function scheduleMessage(scheduleData, client) {
     }
 
     // Date placeholder
-    const now = new Date();
-    const today = now.toLocaleDateString("en-GB", {
+    const today = date.toLocaleDateString("en-GB", {
         day: "numeric",
         month: "long",
         year: "numeric",
     });
-    const tomorrowDate = new Date(now);
-    tomorrowDate.setDate(now.getDate() + 1);
+    const tomorrowDate = new Date(date);
+    tomorrowDate.setDate(date.getDate() + 1);
     const tomorrow = tomorrowDate.toLocaleDateString("en-GB", {
         day: "numeric",
         month: "long",
