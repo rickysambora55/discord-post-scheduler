@@ -190,7 +190,8 @@ function reschedule(client, cycle, time, id) {
 
 // Cron register
 async function scheduleMessage(scheduleData, client) {
-    const { id, time, cycle, message, image, id_channel } = scheduleData;
+    const { id, time, timezone, cycle, message, image, id_channel } =
+        scheduleData;
 
     const date = new Date(time);
     const minute = date.getUTCMinutes();
@@ -215,17 +216,20 @@ async function scheduleMessage(scheduleData, client) {
     }
 
     // Date placeholder
-    const today = date.toLocaleDateString("en-GB", {
+    const localTime = new Date(date.getTime() + timezone * 60 * 60 * 1000);
+    const today = localTime.toLocaleDateString("en-GB", {
         day: "numeric",
         month: "long",
         year: "numeric",
+        timeZone: "UTC",
     });
-    const tomorrowDate = new Date(date);
+    const tomorrowDate = localTime;
     tomorrowDate.setDate(date.getDate() + 1);
     const tomorrow = tomorrowDate.toLocaleDateString("en-GB", {
         day: "numeric",
         month: "long",
         year: "numeric",
+        timeZone: "UTC",
     });
     const formattedMessage = message
         .replace(/\\n/g, "\n")

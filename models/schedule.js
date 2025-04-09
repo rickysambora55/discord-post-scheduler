@@ -39,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
             server_schedule_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
-                unique: "server_schedule_unique",
             },
         },
         {

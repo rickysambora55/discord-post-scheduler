@@ -6,6 +6,7 @@ module.exports = {
             await interaction.deferReply();
 
             // Main function
+            const previewLength = 100;
             const schedules = await client.db.Schedule.findAll({
                 where: {
                     id_server: interaction.guild.id,
@@ -24,7 +25,10 @@ module.exports = {
                             cycle,
                             message,
                         }) => {
-                            const messagePreview = message.slice(0, 30);
+                            const messagePreview = message.slice(
+                                0,
+                                previewLength
+                            );
                             const cycleName = cycle ? `${cycle} days` : "Once";
                             const date = new Date(time);
                             const localTime = new Date(
@@ -40,19 +44,23 @@ module.exports = {
                                     minute: "2-digit",
                                     second: "2-digit",
                                     hour12: false,
+                                    timeZone: "UTC",
                                 }
                             );
+
                             const timezoneName =
                                 timezone > 0
                                     ? `GMT+${timezone}`
                                     : `GMT${timezone}`;
 
                             return (
-                                `**Schedule ID:** [${server_schedule_id}]\n` +
+                                `**Schedule ID:** \`[${server_schedule_id}]\`\n` +
                                 `**Channel:** <#${id_channel}>\n` +
-                                `**Next run:** ${dateString} ${timezoneName}\n` +
-                                `**Cycle:** ${cycleName}\n` +
-                                `**Message:** ${messagePreview}...`
+                                `**Next run:** \`${dateString} ${timezoneName}\`\n` +
+                                `**Cycle:** \`${cycleName}\`\n` +
+                                `**Message:** \n\`\`\`md\n${messagePreview}${
+                                    message.length > previewLength ? "..." : ""
+                                }\`\`\``
                             );
                         }
                     )
