@@ -89,6 +89,18 @@ module.exports = {
                 )
         )
         .addSubcommand((options) =>
+            options
+                .setName("view")
+                .setDescription("View the schedule message")
+                .addIntegerOption((option) =>
+                    option
+                        .setName("id")
+                        .setDescription("Schedule id from /schedule list")
+                        .setMinValue(0)
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand((options) =>
             options.setName("list").setDescription("List all schedules")
         ),
 

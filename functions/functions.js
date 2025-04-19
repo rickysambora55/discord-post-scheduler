@@ -215,27 +215,6 @@ async function scheduleMessage(scheduleData, client) {
         reschedule(client, cycle, time, id);
     }
 
-    // Date placeholder
-    const localTime = new Date(date.getTime() + timezone * 60 * 60 * 1000);
-    const today = localTime.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-    });
-    const tomorrowDate = localTime;
-    tomorrowDate.setDate(date.getDate() + 1);
-    const tomorrow = tomorrowDate.toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-        timeZone: "UTC",
-    });
-    const formattedMessage = message
-        .replace(/\\n/g, "\n")
-        .replace(/<DATE>/g, today)
-        .replace(/<TOMORROW>/g, tomorrow);
-
     // Build cron
     let cronExpr;
     switch (cycle) {
@@ -264,6 +243,7 @@ async function scheduleMessage(scheduleData, client) {
         cronExpr,
         () => {
             // Optional biweekly/triweekly logic
+            const date = new Date(time);
             if (cycle === 14 || cycle === 21) {
                 const now = new Date();
                 const diffWeeks = Math.floor(
@@ -271,6 +251,29 @@ async function scheduleMessage(scheduleData, client) {
                 );
                 if (diffWeeks % (cycle / 7) !== 0) return;
             }
+
+            // Date placeholder
+            const localTime = new Date(
+                date.getTime() + timezone * 60 * 60 * 1000
+            );
+            const today = localTime.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                timeZone: "UTC",
+            });
+            const tomorrowDate = localTime;
+            tomorrowDate.setDate(date.getDate() + 1);
+            const tomorrow = tomorrowDate.toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+                timeZone: "UTC",
+            });
+            const formattedMessage = message
+                .replace(/\\n/g, "\n")
+                .replace(/<DATE>/g, today)
+                .replace(/<TOMORROW>/g, tomorrow);
 
             const channel = client.channels.cache.get(id_channel);
             if (channel) {
