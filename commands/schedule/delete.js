@@ -17,7 +17,11 @@ module.exports = {
                     },
                 });
 
-                if (result > 0) {
+                const cronResult = await client.function.deleteScheduledMessage(
+                    id
+                );
+
+                if (result > 0 && cronResult) {
                     interaction.editReply(
                         `✅ Schedule with id: ${id} has been deleted.`
                     );

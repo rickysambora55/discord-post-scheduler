@@ -99,6 +99,15 @@ module.exports = {
                         .setMinValue(0)
                         .setRequired(true)
                 )
+                .addIntegerOption((option) =>
+                    option
+                        .setName("type")
+                        .setDescription("Type of message to view")
+                        .addChoices(
+                            { name: "Formatted", value: 1 },
+                            { name: "Raw", value: 0 }
+                        )
+                )
         )
         .addSubcommand((options) =>
             options.setName("list").setDescription("List all schedules")

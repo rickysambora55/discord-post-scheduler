@@ -303,6 +303,19 @@ async function scheduleMessage(scheduleData, client) {
     scheduledJobs.set(id, job);
 }
 
+// Cron unregister
+async function deleteScheduledMessage(id) {
+    const job = scheduledJobs.get(id);
+
+    if (job) {
+        job.stop();
+        scheduledJobs.delete(id);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // Error catch
 async function errorCatch(client, interaction, error, overwrite = null) {
     // Get data
@@ -412,5 +425,6 @@ module.exports = {
     parseDateString,
     parseTimezone,
     scheduleMessage,
+    deleteScheduledMessage,
     errorCatch,
 };

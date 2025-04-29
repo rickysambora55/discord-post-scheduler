@@ -7,6 +7,11 @@ module.exports = {
 
             // Get data
             const id = interaction.options.getInteger("id");
+            let type = interaction.options.getInteger("type");
+
+            if (type === undefined) {
+                type = 1;
+            }
 
             // Main function
             const schedule = await client.db.Schedule.findOne({
@@ -45,15 +50,23 @@ module.exports = {
                 year: "numeric",
                 timeZone: "UTC",
             });
-            const formattedMessage = message
-                .replace(/\\n/g, "\n")
-                .replace(/<DATE>/g, today)
-                .replace(/<TOMORROW>/g, tomorrow);
 
-            await interaction.editReply({
-                content: formattedMessage,
-                files: image ? [image] : [],
-            });
+            if (type) {
+                const formattedMessage = message
+                    .replace(/\\n/g, "\n")
+                    .replace(/<DATE>/g, today)
+                    .replace(/<TOMORROW>/g, tomorrow);
+
+                await interaction.editReply({
+                    content: formattedMessage,
+                    files: image ? [image] : [],
+                });
+            } else {
+                await interaction.editReply({
+                    content: `\`\`\`${message}\`\`\``,
+                    files: image ? [image] : [],
+                });
+            }
         } catch (error) {
             // Error function
             await client.function.errorCatch(client, interaction, error);
