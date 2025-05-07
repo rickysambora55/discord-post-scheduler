@@ -171,7 +171,7 @@ function parseTimezone(timezone) {
 }
 
 // Reschedule
-function reschedule(client, cycle, time, id) {
+async function reschedule(client, cycle, time, id) {
     let nextDate = new Date(time);
     if (cycle === 1) {
         nextDate.setUTCDate(nextDate.getUTCDate() + 1);
@@ -182,7 +182,7 @@ function reschedule(client, cycle, time, id) {
     }
 
     // Save to database
-    client.db.Schedule.update(
+    await client.db.Schedule.update(
         { time: nextDate.toISOString() },
         { where: { id } }
     );
@@ -212,7 +212,12 @@ async function scheduleMessage(scheduleData, client) {
 
     // Reschedule past
     if (cycle > 0 && Date.now() > date.getTime()) {
-        reschedule(client, cycle, time, id);
+        const newSchedule = await client.db.Schedule.findOne({
+            where: { id: id },
+            raw: true,
+        });
+
+        await reschedule(client, cycle, newSchedule.time, id);
     }
 
     // Build cron
@@ -241,7 +246,7 @@ async function scheduleMessage(scheduleData, client) {
 
     const job = new CronJob(
         cronExpr,
-        () => {
+        async () => {
             // Optional biweekly/triweekly logic
             const date = new Date(time);
             if (cycle === 14 || cycle === 21) {
@@ -292,7 +297,12 @@ async function scheduleMessage(scheduleData, client) {
                     },
                 });
             } else {
-                reschedule(client, cycle, time, id);
+                const newSchedule = await client.db.Schedule.findOne({
+                    where: { id: id },
+                    raw: true,
+                });
+
+                await reschedule(client, cycle, newSchedule.time, id);
             }
         },
         null,
@@ -300,6 +310,10 @@ async function scheduleMessage(scheduleData, client) {
         `UTC`
     );
 
+    if (scheduledJobs.has(id)) {
+        scheduledJobs.get(id).stop();
+        scheduledJobs.delete(id);
+    }
     scheduledJobs.set(id, job);
 }
 
